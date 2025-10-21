@@ -1,6 +1,7 @@
 import jax.numpy as jnp
 from jax import grad
 from jax.scipy.stats import norm as jnorm
+from scipy.optimize import newton
 
 def black_scholes(S, K, T, r, sigma, q=0, option_type="call"):
     """
@@ -43,25 +44,44 @@ def loss(S, K, T, r, sigma_guess, price, q=0, option_type="call"):
 loss_grad = grad(loss, argnums=4)
 
 def solve_for_implied_volatility(S, K, T, r, price, q=0, sigma_guess=0.8, option_type="call",
-                                 method="newton_rhapson", n_iter=20, epsilon=0.001, verbose=True):
-    # 1. Start with an initial guess value for sigma (IV)
-    sigma_candidate = sigma_guess
-
-    # 2. Loop through until convergence / a certain number of iteractions
-    for i in range(n_iter):
-        # 3. Calcualte the loss value
-        loss_val = loss(S, K, T, r, sigma_candidate, price, q, option_type)
-        if verbose:
-            print(f"Iteraction {i}")
-            print(f"Current loss: {loss_val}")
-            print("---------------------")
-
-        # 4. Check if the loss value is within epsilon
-        if abs(loss_val) < epsilon:
-            break
-        else: 
-            # 5. If loss value is still not small enough, then update the new sigma guess value
-            loss_grad_val = loss_grad(S, K, T, r, sigma_candidate, price, q, option_type)
-            sigma_candidate = sigma_candidate - loss_val / loss_grad_val
+                               n_iter=50, epsilon=1e-6, verbose=False):
+    """
+    Solve for implied volatility using scipy.optimize.newton
+    Returns float('nan') if no solution found
+    """
+    # Input validation
+    if T <= 0 or K <= 0 or S <= 0 or not jnp.isfinite(price):
+        return float('nan')
     
-    return sigma_candidate
+    def objective(sigma):
+        return float(black_scholes(S, K, T, r, sigma, q, option_type) - price)
+    
+    def objective_prime(sigma):
+        return float(loss_grad(S, K, T, r, sigma, price, q, option_type))
+    
+    try:
+        result = newton(
+            func=objective,
+            x0=sigma_guess,
+            fprime=objective_prime,
+            tol=epsilon,
+            maxiter=n_iter,
+            full_output=verbose
+        )
+        
+        if verbose:
+            print(f"Convergence info: {result}")
+            
+        # If full_output=True, result is a tuple and we want first element
+        sigma = result[0] if verbose else result
+        
+        # Validate result
+        if not jnp.isfinite(sigma) or sigma <= 0:
+            return float('nan')
+            
+        return float(sigma)
+        
+    except Exception as e:
+        if verbose:
+            print(f"Newton method failed: {e}")
+        return float('nan')
