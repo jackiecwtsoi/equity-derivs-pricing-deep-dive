@@ -1,6 +1,7 @@
 '''
 To regenerate live market data, run this script: python market_data.py
 '''
+# TODO
 
 from yahooquery import Ticker
 aapl = Ticker('aapl')

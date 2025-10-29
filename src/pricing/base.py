@@ -1,3 +1,6 @@
-import jax.numpy as jnp
-from jax import grad
-from jax.scipy.stats import norm as jnorm
+from abc import abstractmethod
+
+class BaseModel():
+    @abstractmethod
+    def price(self, S, K, T, r, sigma, q, option_type) -> float:
+        pass

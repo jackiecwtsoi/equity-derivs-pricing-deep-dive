@@ -1,10 +1,12 @@
 import streamlit as st
-from exploration import black_scholes, delta, solve_for_implied_volatility, solve_for_iv_brent
 import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 from scipy.interpolate import griddata, RBFInterpolator
 from scipy.ndimage import gaussian_filter
+
+from implied_volatility import BrentIVCalculator
+from pricing import BlackScholesModel
 
 def render():
     st.title("Options Pricing Learning")
@@ -44,7 +46,8 @@ def render():
         T = row["T"]
         market_price = row["lastPrice"]
 
-        return solve_for_iv_brent(S, K, T, r, market_price, q=0, option_type="call")
+        iv_calculator = BrentIVCalculator(BlackScholesModel(), vol_min=0.001, vol_max=5.0)
+        return iv_calculator.solve_for_iv(S, K, T, r, q, market_price, option_type="call")
 
     df_iv_curve["Moneyness"] = S / df_calls["strike"]
     df_iv_curve["Time to Maturity"] = df_calls["T"]
