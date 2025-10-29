@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 from jax import grad
 from jax.scipy.stats import norm as jnorm
-from scipy.optimize import newton
+from scipy.optimize import newton, brentq
 
 def black_scholes(S, K, T, r, sigma, q=0, option_type="call"):
     """
@@ -85,3 +85,17 @@ def solve_for_implied_volatility(S, K, T, r, price, q=0, sigma_guess=0.8, option
         if verbose:
             print(f"Newton method failed: {e}")
         return float('nan')
+
+def solve_for_iv_brent(S, K, T, r, price, q=0, option_type="call", vol_min=0.0001, vol_max=5.0):
+    if T <= 0 or K <= 0 or S <= 0 or price <= 0:
+        return float('nan')
+    
+    def objective(sigma):
+        return float(black_scholes(S, K, T, r, sigma, q, option_type) - price)
+    
+    try:
+        iv = brentq(objective, vol_min, vol_max, maxiter=100)
+        return float(iv)
+    except (ValueError, RuntimeError):
+        return float('nan')
+    
