@@ -10,11 +10,11 @@ pip install -r requirements.txt
 
 ## Running the Program
 ```
-streamlit run src/app.py
+cd src
+streamlit run app.py
 ```
 
 ## Features
-TBC
-
-## Code Structure Overview
-TBC
+1. Implied volatility surface
+2. Selection of underlying
+3. Simulated price of exotic option payoffs
