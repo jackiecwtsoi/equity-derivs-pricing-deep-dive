@@ -54,52 +54,6 @@ def render():
     df_iv_curve["Calculated IV"] = df_calls.apply(compute_iv, axis=1)
     df_iv_curve["Suggested IV"] = df_calls["impliedVolatility"]
 
-
-    def plot_iv_surface(df, nx=60, ny=60):
-        # require enough valid points
-        df = df.dropna(subset=['Moneyness', 'Time to Maturity', 'Calculated IV']).copy()
-        if len(df) < 5:
-            st.warning("Not enough data points to build a surface — showing scatter instead.")
-            fig = go.Figure(data=go.Scatter3d(
-                x=df['Moneyness'], y=df['Time to Maturity'], z=df['Calculated IV'],
-                mode='markers', marker=dict(size=4)
-            ))
-            st.plotly_chart(fig, use_container_width=True)
-            return
-
-        pts = df[['Moneyness', 'Time to Maturity']].values
-        vals = df['Calculated IV'].values
-
-        # build a regular grid over the extents
-        xi = np.linspace(df['Moneyness'].min(), df['Moneyness'].max(), nx)
-        yi = np.linspace(df['Time to Maturity'].min(), df['Time to Maturity'].max(), ny)
-        XI, YI = np.meshgrid(xi, yi)
-
-        # linear interpolation; where linear produces NaN, fill with nearest
-        ZI = griddata(pts, vals, (XI, YI), method='linear')
-        if np.isnan(ZI).any():
-            ZI_nearest = griddata(pts, vals, (XI, YI), method='nearest')
-            ZI = np.where(np.isnan(ZI), ZI_nearest, ZI)
-
-        # final safety: if still NaNs, replace with small constant or drop
-        nan_mask = np.isnan(ZI)
-        if nan_mask.any():
-            ZI[nan_mask] = np.nanmean(vals) if np.isfinite(np.nanmean(vals)) else 0.0
-
-        fig = go.Figure(data=[go.Surface(x=XI, y=YI, z=ZI, colorscale='Viridis', showscale=True)])
-        fig.update_layout(
-            title='Implied Volatility Surface',
-            scene=dict(
-                xaxis_title='Moneyness (S/K)',
-                yaxis_title='Time to Maturity (yrs)',
-                zaxis_title='Implied Volatility',
-                aspectmode='auto'  # or 'cube' / dict(x=...,y=...,z=...) to adjust scaling
-            ),
-            width=900,
-            height=700,
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
     def plot_smoothed_iv_surface(df, nx=60, ny=60, smoothing_method='rbf', smoothness=1.0):
         df = df.dropna(subset=['Moneyness', 'Time to Maturity', 'Calculated IV']).copy()
         

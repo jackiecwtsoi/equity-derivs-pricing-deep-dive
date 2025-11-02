@@ -1,11 +1,11 @@
 import streamlit as st
-import ui.volatility_and_options_pricing as voap
+import ui.volatility_surface as volsfc
 
 def main():
     st.set_page_config(
         page_title="Volatility and Options Pricing"
     )
-    voap.render()
+    volsfc.render()
 
 
 if __name__ == "__main__":
