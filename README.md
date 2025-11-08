@@ -4,6 +4,7 @@
 This is a personal project where I explore the pricing of equity derivatives.
 
 ## Setup
+Python version 3.9.6
 ```
 pip install -r requirements.txt
 ```

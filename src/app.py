@@ -1,5 +1,6 @@
 import streamlit as st
 import ui.volatility_surface as volsfc
+from datacache.auto_refresher import start_auto_refresher
 
 def main():
     st.set_page_config(
@@ -9,4 +10,5 @@ def main():
 
 
 if __name__ == "__main__":
+    start_auto_refresher()
     main()

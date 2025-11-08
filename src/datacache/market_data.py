@@ -1,13 +1,13 @@
-'''
-To regenerate live market data, run this script: python market_data.py
-'''
-# TODO
-
 from yahooquery import Ticker
-aapl = Ticker('aapl')
-# print(aapl.summary_detail)
 
-df = aapl.option_chain
-df_calls = df.xs('calls', level=2)
-df_calls.to_csv("../data/live_calls.csv")
+class MarketDataLoader():
+    def load_call_option_chain(self, ticker):
+        df = self.__load_option_chain(ticker).xs("calls", level=2)
+        df.to_csv("../data/live_calls.csv")
 
+    def load_put_option_chain(self, ticker):
+        df = self.__load_option_chain(ticker).xs("puts", level=2)
+        df.to_csv("../data/live_puts.csv")
+
+    def __load_option_chain(self, ticker):
+        return Ticker(ticker).option_chain
