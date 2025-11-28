@@ -1,34 +1,18 @@
 # A Deep Dive into Exotic Equity Derivatives Pricing
 
 ## Introduction
-This is a personal project where I explore the pricing of equity derivatives.
+This is a personal project where I explore the mathematical/statistical concepts that are core to quantitative finance and implement them in the form of a web app.
 
-## The App
-### Setup
-Python version 3.9.6
-```
-pip install -r requirements.txt
-```
+## A Mathematical Deep Dive
+While there are many ready-to-use packages and functions available online for implementation, it is important for one to understand the key concepts of why some of the algorithms are structured the way they are. This section explores the key derivations and findings on the underlying assumptions and mechanisms of options pricing.
 
-###  Running the Program
-```
-cd src
-streamlit run app.py
-```
-
-###  Features
-1. Implied volatility surface
-2. Selection of underlying
-3. Simulated price of exotic option payoffs
-
-## Key Mathematical Concepts
-This app is an exploration of the mathematical/statistical concepts that are core to quantitative finance. While there are many ready-to-use packages and functions available for implementation, it is important for one to understand the key concepts of why some of the algorithms are structured the way they are. This section explores the key derivations and findings on the underlying assumptions and mechanisms of options pricing.
+To aid understanding, I have designed each of the sections to represent a building block that comes useful in the derivation of the Black-Scholes formula, one of the most important concepts in options pricing.
 
 ### 1. Brownian Motion
-#### Standard Brownian Motion - the building block of everything
-The first and foremost assumption is that prices of a stock are a Brownian motion. To understand this, we first need to understand the concept of random walk in the discrete space. 
+A key question one may have when one starts out to study stocks would be: how do I model the price of a stock? Indeed, while there are many nice statistical distributions out there, there seems to be no easy way to model how stock prices move - they all seem so random! The answer amongst many and likely the simplest to understand, is that we can model stock prices just by the idea that they "walk" randomly. In the following sections we will explore this in a more formal way.
 
-A random walk is a simple process where we assume for $`n`$ intervals in a time period $`t`$, where $`t = n{\Delta}t`$, we have
+#### Standard Brownian Motion - the building block of everything
+We first need to understand the concept of random walk in the discrete space. A random walk is a simple process where we assume for $`n`$ intervals in a time period $`t`$, where $`t = n{\Delta}t`$, we have
 ```math
 X(t) = Z_1 + Z_2 + ... + Z_n
 ```
@@ -46,7 +30,7 @@ W_m(t) \sim N(0, t)
 ```
 
 #### Variations of Brownian Motion
-There are many variations of the Brownian motion. One of them is the Brownian bridge and its variations where $`W(t)`$ starts at a certain level $`a`$ and sends at a certain level $`b`$. Another variation is the Brownian motion with drift, where we introduce two constant parameters $`\mu`$ which represents the "drift" and $`\sigma`$ which represents volatility, and the distribution now looks like this:
+There are many variations of the Brownian motion. One of them is the Brownian bridge and its variations where $`W(t)`$ starts at a certain level $`a`$ and stops at a certain level $`b`$. Another variation is the Brownian motion with drift, where we introduce two constant parameters $`\mu`$ which represents the "drift" and $`\sigma`$ which represents volatility, and the distribution now looks like this:
 ```math
 X(t) = \mu t + \sigma W(t)
 ```
@@ -61,7 +45,33 @@ where $`t \ge 0`$ and $`G(t) > 0`$.
 
 We will explain the significance of this GBM concept further in a later section.
 
-### 2. Risk-Neutral Pricing & Martingale
+### 2. Stochastic Calculus & Ito's Lemma
+After GBM, the second building block to understand derivatives pricing is Ito's Integral and subsequently Ito's Lemma which are ideas extended from stochastic calculus.
+
+#### The Stochastic Integral
+In the calculus we've learnt in high school, when we take an integral of a function, that function is "deterministic" i.e. not random. An example of this would be integrating something like $`f(x) = x + 3`$, where this $`f(x)`$ is something that outputs a "set"/"deterministic" value for every single input. Say I input $`x = 1`$, then this $`f(x)`$ gives me a value of $`4`$ every single time I run this calculation. This is what we call a deterministic function.
+
+But what about the Brownian motion $`W(t)`$ that we've talked about earlier? Every time we try to find "values" (or more accurately "draw samples") from this $`W(t)`$, the outcome would be random! It is a "random variable" as opposed to a "deterministic function". The second property of the Brownian motion is that it is continuous but NOT differentiable (proof I will put in the appendix). The natural question becomes, then how can we find the integral for this kind of process?
+
+This is where stochastic integral comes in. Formally, it is defined as
+```math
+I(T) = \int_{0}^{T} g(u) \space dW(u)
+```
+
+### 3. Risk-Neutral Pricing & Martingale
 To price derivatives fairly, we need to also understand risk-neutral pricing and the concept of a martingale. In a nutshell, there are two worlds:
 - $`P`$ which represents the real-life probabilities of how a stock moves
 - $`Q`$ which represents the "risk-neutral" probabilities of how a stock moves, under the assumption that there is no arbitrage
+
+## The App
+### Setup
+Python version 3.9.6
+```
+pip install -r requirements.txt
+```
+
+###  Running the Program
+```
+cd src
+streamlit run app.py
+```
