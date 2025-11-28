@@ -40,7 +40,7 @@ W_m(s) = \frac{1}{\sqrt{m}}Z_{ms}, \space s \in [0, t]
 ```
 and this is called a scaled random walk.
 
-One can now quickly deduce that when the slicing parameter $`m \to \infin`$ and by the Central Limit Theorem, the Brownian motion $`W_m(t)`$ follows a normal distribution i.e. 
+One can now quickly deduce that when the slicing parameter $`m \to \infty`$ and by the Central Limit Theorem, the Brownian motion $`W_m(t)`$ follows a normal distribution i.e. 
 ```math
 W_m(t) \sim N(0, t)
 ```
