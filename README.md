@@ -53,10 +53,11 @@ In the calculus we've learnt in high school, when we take an integral of a funct
 
 But what about the Brownian motion $`W(t)`$ that we've talked about earlier? Every time we try to find "values" (or more accurately "draw samples") from this $`W(t)`$, the outcome would be random! It is a "random variable" as opposed to a "deterministic function". The second property of the Brownian motion is that it is continuous but NOT differentiable (proof I will put in the appendix). The natural question becomes, then how can we find the integral for this kind of process?
 
-This is where stochastic integral comes in. Formally, it is defined as
+This is where stochastic integral comes in. We can view Ito's Integral as
 ```math
 I(T) = \int_{0}^{T} g(u) \space dW(u)
 ```
+where $`g(u)`$ is a random process and $`W(u)`$ are both random processes. In the context of a stock price movement, we can think of $`g(u)`$ as the number of shares we hold for that particular stock at that time instant, and $`W(t)`$ is the stock price.
 
 ### 3. Risk-Neutral Pricing & Martingale
 To price derivatives fairly, we need to also understand risk-neutral pricing and the concept of a martingale. In a nutshell, there are two worlds:
